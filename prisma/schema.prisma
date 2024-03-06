@@ -1,20 +1,14 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = "mongodb://root:password123@mongodb:27017/kaching"
+  provider = "sqlite"
+  url      = "file:../db/dev.db"
 }
 
 model Client {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            Int       @id @default(autoincrement())
   walletAddress String    @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -22,12 +16,29 @@ model Client {
 }
 
 model Project {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             Int           @id @default(autoincrement())
   name           String
   depositAddress String
   secret         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  clientId       String   @db.ObjectId
-  client         Client   @relation(fields: [clientId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  clientId       Int
+  client         Client        @relation(fields: [clientId], references: [id])
+  transactions   Transaction[]
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  chainId       String
+  tokenName     String
+  tokenContract String
+  fromAddress   String
+  toAddress     String
+  amount        Float
+  txnHash       String
+  status        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  projectId     Int
+  project       Project  @relation(fields: [projectId], references: [id])
 }
