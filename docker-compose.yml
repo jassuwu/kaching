@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  mongodb:
+    image: docker.io/bitnami/mongodb:latest
+    environment:
+      - MONGODB_ADVERTISED_HOSTNAME=mongodb
+      - MONGODB_REPLICA_SET_MODE=primary
+      - MONGODB_ROOT_PASSWORD=password123
+      - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+    ports:
+      - '27017:27017'
+    networks:
+      - backend-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  backend-network:
+    driver: bridge
