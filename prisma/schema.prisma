@@ -25,6 +25,8 @@ model Project {
   clientId       Int
   client         Client        @relation(fields: [clientId], references: [id])
   transactions   Transaction[]
+
+  @@unique([clientId, depositAddress])
 }
 
 model Transaction {

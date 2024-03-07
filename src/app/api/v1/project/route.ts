@@ -1,20 +1,23 @@
 import { z } from "zod";
+import crypto from "crypto";
 import { isAddress } from "viem";
 import prisma from "@/db";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const postReqBodySchema = z.object({
-    walletAddress: z.string().refine(address => isAddress(address), {
-        message: "Provided address is invalid. Please ensure that the wallet address is in the right format.",
+    name: z.string({ required_error: "Name is required." }),
+    depositAddress: z.string().refine(address => isAddress(address), {
+        message: "Provided depositAddress is invalid. Please ensure that the wallet address is in the right format.",
     }),
-})
+    clientId: z.number(),
+});
 
 export async function GET() {
     try {
-        const clients = await prisma.client.findMany();
-        return Response.json({ clients });
+        const projects = await prisma.project.findMany();
+        return Response.json({ projects });
     } catch (error) {
-        return Response.json({ error: "Error fetching clients" }, { status: 500 });
+        return Response.json({ error: "Error fetching projects." }, { status: 500 });
     }
 }
 
@@ -25,9 +28,13 @@ export async function POST(request: Request) {
         if (!validatedReq.success) {
             return Response.json(validatedReq.error, { status: 400 });
         }
-        const result = await prisma.client.create({
+        const secretKey = crypto.randomBytes(32).toString('hex');
+        const result = await prisma.project.create({
             data: {
-                walletAddress: validatedReq.data.walletAddress,
+                name: validatedReq.data.name,
+                depositAddress: validatedReq.data.depositAddress,
+                secret: secretKey,
+                clientId: validatedReq.data.clientId,
             },
         });
         return Response.json({ result });
@@ -38,7 +45,7 @@ export async function POST(request: Request) {
                 return Response.json({ error: error.message }, { status: 400 });
             }
         } else {
-            return Response.json({ error: "Error creating client" }, { status: 500 });
+            return Response.json({ error: "Error creating project" }, { status: 500 });
         }
     }
 }

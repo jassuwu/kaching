@@ -2,7 +2,7 @@ import { z } from "zod";
 import prisma from "@/db";
 import { isAddress } from "viem";
 
-const updateClientSchema = z.object({
+const patchReqBodySchema = z.object({
     walletAddress: z.string().refine(address => isAddress(address), {
         message: "Provided address is invalid. Please ensure that the wallet address is in the right format.",
     }),
@@ -22,24 +22,23 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
     try {
         const reqBodyJSON = await request.json();
-        const validatedReq = updateClientSchema.safeParse(reqBodyJSON);
+        const validatedReq = patchReqBodySchema.safeParse(reqBodyJSON);
         if (!validatedReq.success) {
             return Response.json(validatedReq.error, { status: 400 });
         }
+        const updatedBody = validatedReq.data;
         const result = await prisma.client.update({
             where: {
                 id: Number(params.id)
             },
-            data: {
-                walletAddress: validatedReq.data.walletAddress,
-            },
+            data: updatedBody,
         });
         return Response.json({ result });
     } catch (error) {
-        console.error("/client/[id] PUT", error);
+        console.error("/client/[id] PATCH", error);
         return Response.json({ error: `Error updating client for ID: ${params.id}` }, { status: 500 });
     }
 }
