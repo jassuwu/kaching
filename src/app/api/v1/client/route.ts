@@ -26,9 +26,7 @@ export async function POST(request: Request) {
             return Response.json(validatedReq.error, { status: 400 });
         }
         const result = await prisma.client.create({
-            data: {
-                walletAddress: validatedReq.data.walletAddress,
-            },
+            data: validatedReq.data,
         });
         return Response.json({ result });
     } catch (error) {

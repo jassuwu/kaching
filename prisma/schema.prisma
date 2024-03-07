@@ -33,6 +33,7 @@ model Transaction {
   id            Int      @id @default(autoincrement())
   chainId       String
   tokenName     String
+  tokenSymbol   String
   tokenContract String
   fromAddress   String
   toAddress     String

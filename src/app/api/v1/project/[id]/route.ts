@@ -30,16 +30,15 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         if (!validatedReq.success) {
             return Response.json(validatedReq.error, { status: 400 });
         }
-        const updatedData = validatedReq.data;
         const result = await prisma.project.update({
             where: {
                 id: Number(params.id)
             },
-            data: updatedData,
+            data: validatedReq.data,
         });
         return Response.json({ result });
     } catch (error) {
-        console.error("/project/[id] PUT", error);
+        console.error("/project/[id] PATCH", error);
         return Response.json({ error: `Error updating project for ID: ${params.id}` }, { status: 500 });
     }
 }

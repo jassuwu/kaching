@@ -29,12 +29,11 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         if (!validatedReq.success) {
             return Response.json(validatedReq.error, { status: 400 });
         }
-        const updatedBody = validatedReq.data;
         const result = await prisma.client.update({
             where: {
                 id: Number(params.id)
             },
-            data: updatedBody,
+            data: validatedReq.data,
         });
         return Response.json({ result });
     } catch (error) {

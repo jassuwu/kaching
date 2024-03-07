@@ -31,10 +31,8 @@ export async function POST(request: Request) {
         const secretKey = crypto.randomBytes(32).toString('hex');
         const result = await prisma.project.create({
             data: {
-                name: validatedReq.data.name,
-                depositAddress: validatedReq.data.depositAddress,
+                ...validatedReq.data,
                 secret: secretKey,
-                clientId: validatedReq.data.clientId,
             },
         });
         return Response.json({ result });
