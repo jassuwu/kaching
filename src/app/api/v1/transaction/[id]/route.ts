@@ -19,12 +19,19 @@ const patchReqBodySchema = z.object({
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {
-        const transaction = await prisma.transaction.findFirst({
+        const transaction = await prisma.transaction.findUnique({
             where: {
                 id: Number(params.id)
+            },
+            include: {
+                project: {
+                    include: {
+                        client: true
+                    }
+                },
             }
         });
-        return Response.json({ transaction });
+        return Response.json(transaction);
     } catch (error) {
         console.error("/transaction/[id] GET", error);
         return Response.json({ error: `Error fetching transaction for ID: ${params.id}` })
