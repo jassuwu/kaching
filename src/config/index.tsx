@@ -1,4 +1,5 @@
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { createPublicClient, http } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { polygonMumbai } from "wagmi/chains";
 
@@ -23,4 +24,9 @@ export const config = defaultWagmiConfig({
   storage: createStorage({
     storage: cookieStorage,
   }),
+});
+
+export const publicClient = createPublicClient({
+  chain: polygonMumbai,
+  transport: http(),
 });
