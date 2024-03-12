@@ -7,7 +7,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main className="h-screen bg-black flex flex-col items-center">
       <section className="h-[92%] w-full flex flex-col justify-between items-center">
         <div className="p-20 pb-14">
-          <p className="text-white font-black text-7xl tracking-wide">
+          <p className="text-white font-black text-7xl tracking-wide font-georama">
             ka<span className="text-primary">ching</span>
           </p>
         </div>

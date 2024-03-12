@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        lato: ["var(--font-lato)"],
+        georama: ["var(--font-georama)"],
+      },
       colors: {
         primary: "#FFCE0A",
         borderGray: "#27272A"
