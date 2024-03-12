@@ -15,7 +15,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           <div className="px-8 py-4">
             <p className="text-2xl text-white font-extrabold">Checkout for</p>
             <p className="text-lg text-white font-light">
-              Arasaka Corporations Inc.
+              {transaction.project.name}
             </p>
           </div>
           <div className="border-b border-borderGray" />
@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
               </p>
             </div>
           </div>
-          <Connection />
+          <Connection transaction={transaction} />
         </div>
       </section>
       <footer className="h-[8%] bg-stone-950 w-full shadow-defaultBackdrop flex justify-center items-center">
