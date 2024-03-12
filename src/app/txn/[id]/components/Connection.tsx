@@ -1,11 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 
 export default function Connection() {
+  const { open } = useWeb3Modal();
+
   return (
     <div className="w-full flex flex-col justify-center items-center gap-6 py-4">
-      <Button className="bg-primary shadow-connectWalletButtonBackdrop text-black font-bold selection:bg-primary/80 selection:text-primary">
+      <Button
+        onClick={() => open()}
+        className="bg-primary shadow-connectWalletButtonBackdrop text-black font-bold hover:bg-primary/80"
+      >
         Connect Wallet
       </Button>
       <p
