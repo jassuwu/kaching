@@ -1,8 +1,27 @@
 "use server";
 
-import { Transaction } from "@prisma/client";
+import prisma from "@/db";
 
 export async function getTransaction(id: string) {
-    const transaction = await fetch(`http://localhost:3000/api/v1/transaction/${id}`);
-    return transaction.json() as Promise<Transaction>
+    try {
+        const transaction = await prisma.transaction.findUnique({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                project: {
+                    include: {
+                        client: true
+                    }
+                },
+            }
+        });
+        if (transaction) {
+            return transaction;
+        } else {
+            throw new Error(`The fetched transaction for the ID ${id} was null.`)
+        }
+    } catch (error) {
+        console.error("/transaction/[id] GET", error);
+    }
 }

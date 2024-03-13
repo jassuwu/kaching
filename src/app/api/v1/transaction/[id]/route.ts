@@ -17,7 +17,7 @@ const patchReqBodySchema = z.object({
     status: z.enum(["CREATED", "PENDING", "SUCCESS", "FAILURE"]).optional(),
 });
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(_: Request, { params }: { params: { id: string } }) {
     try {
         const transaction = await prisma.transaction.findUnique({
             where: {
@@ -31,7 +31,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
                 },
             }
         });
-        return Response.json(transaction);
+        if (transaction) {
+            return Response.json(transaction);
+        } else {
+            throw new Error(`The fetched transaction for the ID ${params.id} was null.`)
+        }
     } catch (error) {
         console.error("/transaction/[id] GET", error);
         return Response.json({ error: `Error fetching transaction for ID: ${params.id}` })
