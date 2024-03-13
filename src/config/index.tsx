@@ -3,7 +3,7 @@ import { createPublicClient, http } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 import { polygonMumbai } from "wagmi/chains";
 
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+export const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID;
 
 if (!projectId) throw new Error("Project ID is not defined.");
 
