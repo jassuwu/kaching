@@ -22,7 +22,6 @@ export default function Timer({ totalTimeInSeconds, onTimeUp }: TimerProps) {
   }, [timeLeft]);
 
   useEffect(() => {
-    console.log(timeLeft);
     if (timeLeft <= 0) {
       onTimeUp();
     }
