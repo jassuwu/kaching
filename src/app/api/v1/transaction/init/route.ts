@@ -30,10 +30,19 @@ export async function POST(request: Request) {
         if (!validatedReq.success) {
             return Response.json(validatedReq.error, { status: 400 });
         }
-        const result = await prisma.transaction.create({
-            data: validatedReq.data,
+        const project = await prisma.project.findUnique({
+            where: {
+                id: validatedReq.data.projectId,
+            },
         });
-        return Response.json({ result });
+        if (project) {
+            const result = await prisma.transaction.create({
+                data: { ...validatedReq.data, toAddress: project.depositAddress },
+            });
+            return Response.json({ result });
+        } else {
+            throw new Error(`Given project doesn't exist for ID: ${validatedReq.data.projectId}`)
+        }
     } catch (error) {
         console.error(error);
         if (error instanceof PrismaClientKnownRequestError) {

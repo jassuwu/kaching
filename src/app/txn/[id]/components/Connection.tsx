@@ -8,10 +8,9 @@ import { ContractAddresses } from "@/constants";
 import { cn, formatAmountToPrecision, maskAddress } from "@/lib/utils";
 import { Transaction } from "@prisma/client";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   TransactionReceipt,
-  WriteContractReturnType,
   encodeFunctionData,
   erc20Abi,
   formatEther,
@@ -29,7 +28,7 @@ import {
   useWriteContract,
 } from "wagmi";
 
-import { InfoIcon, RotateCw, LinkIcon } from "lucide-react";
+import { InfoIcon, LinkIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -40,13 +39,20 @@ import Link from "next/link";
 
 interface ConnectionProps {
   transaction: Transaction;
+  timeIsUp: boolean;
 }
 
-export default function Connection({ transaction }: ConnectionProps) {
+export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
   const [isPaying, setIsPaying] = useState(false);
   const [receipt, setReceipt] = useState<TransactionReceipt>();
   const [paid, setPaid] = useState(false);
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    if (timeIsUp && !isPaying && !paid) {
+      setFailed(true);
+    }
+  }, [timeIsUp, isPaying, paid]);
 
   const { open } = useWeb3Modal();
   const { disconnect } = useDisconnect();
@@ -253,41 +259,55 @@ export default function Connection({ transaction }: ConnectionProps) {
                 {!receipt ? (
                   <Skeleton className="h-6 w-1/2 bg-green-950" />
                 ) : (
-                  <Link
-                    href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
-                    className="underline flex justify-end items-center gap-2"
-                  >
-                    <p className="text-black font-bold">
-                      {maskAddress(receipt.transactionHash, 10)}
-                    </p>
-                    <LinkIcon className="text-black h-4 w-4" />
-                  </Link>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Link
+                          target="_blank"
+                          href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
+                          className="underline flex justify-end items-center gap-2"
+                        >
+                          <p className="text-black font-bold">
+                            {maskAddress(receipt.transactionHash, 10)}
+                          </p>
+                          <LinkIcon className="text-black h-4 w-4" />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-black border border-borderGray">
+                        <p className="text-white text-center">
+                          View in explorer
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
             </div>
           ) : (
             <div className="w-full rounded-md bg-red-500 p-6 my-10 shadow-failureBackdrop">
               <p className="font-black text-3xl mb-4">Transaction Failed :(</p>
-              <div className="flex justify-between items-center">
-                <p className="text-black">Txn Hash</p>
-                {!receipt ? (
-                  <Skeleton className="h-6 w-1/2 bg-red-950" />
-                ) : (
-                  <Link
-                    href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
-                    className="underline flex justify-end items-center gap-2"
-                  >
-                    <p className="text-black font-bold">
-                      {maskAddress(receipt.transactionHash, 10)}
-                    </p>
-                    <LinkIcon className="text-black h-4 w-4" />
-                  </Link>
-                )}
-              </div>
-              <Button className="w-full mt-4 border-2 flex items-center justify-center gap-4 border-black bg-transparent">
-                <RotateCw className="h-4 w-4" />
-                <p className="font-bold">Retry transaction</p>
-              </Button>
+              {!timeIsUp ? (
+                <div className="flex justify-between items-center">
+                  <p className="text-black">Txn Hash</p>
+                  {!receipt ? (
+                    <Skeleton className="h-6 w-1/2 bg-red-950" />
+                  ) : (
+                    <Link
+                      href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
+                      className="underline flex justify-end items-center gap-2"
+                    >
+                      <p className="text-black font-bold">
+                        {maskAddress(receipt.transactionHash, 10)}
+                      </p>
+                      <LinkIcon className="text-black h-4 w-4" />
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <p className="text-black">
+                  Order expired. Return to merchant and try again.
+                </p>
+              )}
             </div>
           )}
           <Link href={"/end"}>

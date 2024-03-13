@@ -7,7 +7,7 @@ const patchReqBodySchema = z.object({
     tokenName: z.string().optional(),
     tokenContract: z.string().refine(address => isAddress(address), {
         message: "Provided contractAddress is invalid. Please ensure that the address is in the right format.",
-    }),
+    }).optional(),
     tokenSymbol: z.string().optional(),
     fromAddress: z.string().refine(address => isAddress(address), {
         message: "Provided fromAddress is invalid. Please ensure that the address is in the right format.",
