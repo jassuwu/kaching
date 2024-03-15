@@ -36,6 +36,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { completeTransaction } from "../actions";
 
 interface ConnectionProps {
   transaction: Transaction;
@@ -45,20 +46,26 @@ interface ConnectionProps {
 export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
   const [isPaying, setIsPaying] = useState(false);
   const [receipt, setReceipt] = useState<TransactionReceipt>();
-  const [paid, setPaid] = useState(false);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    if (timeIsUp && !isPaying && !paid) {
-      setFailed(true);
-    }
-  }, [timeIsUp, isPaying, paid]);
+  const [paid, setPaid] = useState(transaction.status === "SUCCESS");
+  const [failed, setFailed] = useState(transaction.status === "FAILURE");
 
   const { open } = useWeb3Modal();
   const { disconnect } = useDisconnect();
   const { writeContractAsync } = useWriteContract();
 
   const { address, isConnecting, isConnected } = useAccount();
+
+  useEffect(() => {
+    if (timeIsUp && !isPaying && !paid) {
+      void completeTransaction(transaction.id, {
+        fromAddress: address as string,
+        status: "FAILURE",
+        txnHash: "",
+      });
+      setFailed(true);
+    }
+  }, [timeIsUp, isPaying, paid, transaction.id, address]);
+
   const {
     data: balance,
     isLoading: balanceLoading,
@@ -129,8 +136,18 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
       console.log("handlePay -- txReceipt --", txReceipt);
       setReceipt(txReceipt);
       if (txReceipt.status === "success") {
+        await completeTransaction(transaction.id, {
+          fromAddress: address as string,
+          status: "SUCCESS",
+          txnHash: txReceipt.transactionHash,
+        });
         setPaid(true);
       } else {
+        await completeTransaction(transaction.id, {
+          fromAddress: address as string,
+          status: "FAILURE",
+          txnHash: txReceipt.transactionHash,
+        });
         setFailed(true);
       }
     } catch (error) {
