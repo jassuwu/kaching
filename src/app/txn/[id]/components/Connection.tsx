@@ -45,6 +45,7 @@ interface ConnectionProps {
 
 export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
   const [isPaying, setIsPaying] = useState(false);
+  const [hash, setHash] = useState("");
   const [receipt, setReceipt] = useState<TransactionReceipt>();
   const [paid, setPaid] = useState(transaction.status === "SUCCESS");
   const [failed, setFailed] = useState(transaction.status === "FAILURE");
@@ -56,6 +57,13 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
   const { address, isConnecting, isConnected } = useAccount();
 
   useEffect(() => {
+    console.log(transaction.txnHash, receipt?.transactionHash);
+    if (transaction.txnHash) {
+      setHash(transaction.txnHash);
+    } else if (receipt?.transactionHash) {
+      setHash(receipt.transactionHash);
+    }
+
     if (timeIsUp && !isPaying && !paid) {
       void completeTransaction(transaction.id, {
         fromAddress: address as string,
@@ -158,21 +166,23 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
 
   return (
     <section className="w-full flex flex-col justify-center items-center gap-2">
-      <div className="w-full flex flex-col justify-center items-center gap-2">
-        {!isConnecting ? (
-          <Button
-            onClick={handleConnectionToggle}
-            variant={isConnected ? "destructive" : "default"}
-            className={cn(
-              "shadow-connectWalletButtonBackdrop text-black font-bold"
-            )}
-          >
-            {isConnected ? "Disconnect" : "Connect"} Wallet
-          </Button>
-        ) : (
-          <Skeleton className="h-10 w-32" />
-        )}
-      </div>
+      {transaction.status === "CREATED" ? (
+        <div className="w-full flex flex-col justify-center items-center gap-2">
+          {!isConnecting ? (
+            <Button
+              onClick={handleConnectionToggle}
+              variant={isConnected ? "destructive" : "default"}
+              className={cn(
+                "shadow-connectWalletButtonBackdrop text-black font-bold"
+              )}
+            >
+              {isConnected ? "Disconnect" : "Connect"} Wallet
+            </Button>
+          ) : (
+            <Skeleton className="h-10 w-32" />
+          )}
+        </div>
+      ) : null}
       {!(paid || failed) ? (
         isConnected ? (
           <div className="w-full px-8 py-6 flex flex-col gap-2">
@@ -273,7 +283,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
               </p>
               <div className="flex justify-between items-center">
                 <p className="text-black">Txn Hash</p>
-                {!receipt ? (
+                {!hash ? (
                   <Skeleton className="h-6 w-1/2 bg-green-950" />
                 ) : (
                   <TooltipProvider>
@@ -281,11 +291,11 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
                       <TooltipTrigger>
                         <Link
                           target="_blank"
-                          href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
+                          href={`https://mumbai.polygonscan.com/tx/${hash}`}
                           className="underline flex justify-end items-center gap-2"
                         >
                           <p className="text-black font-bold">
-                            {maskAddress(receipt.transactionHash, 10)}
+                            {maskAddress(hash, 10)}
                           </p>
                           <LinkIcon className="text-black h-4 w-4" />
                         </Link>
@@ -305,20 +315,20 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
               <p className="font-black text-3xl mb-4">Transaction Failed :(</p>
               {!timeIsUp ? (
                 <div className="flex justify-between items-center">
-                  <p className="text-black">Txn Hash</p>
-                  {!receipt ? (
-                    <Skeleton className="h-6 w-1/2 bg-red-950" />
-                  ) : (
-                    <Link
-                      href={`https://mumbai.polygonscan.com/tx/${receipt.transactionHash}`}
-                      className="underline flex justify-end items-center gap-2"
-                    >
-                      <p className="text-black font-bold">
-                        {maskAddress(receipt.transactionHash, 10)}
-                      </p>
-                      <LinkIcon className="text-black h-4 w-4" />
-                    </Link>
-                  )}
+                  {hash ? (
+                    <>
+                      <p className="text-black">Txn Hash</p>
+                      <Link
+                        href={`https://mumbai.polygonscan.com/tx/${hash}`}
+                        className="underline flex justify-end items-center gap-2"
+                      >
+                        <p className="text-black font-bold">
+                          {maskAddress(hash, 10)}
+                        </p>
+                        <LinkIcon className="text-black h-4 w-4" />
+                      </Link>
+                    </>
+                  ) : null}
                 </div>
               ) : (
                 <p className="text-black">

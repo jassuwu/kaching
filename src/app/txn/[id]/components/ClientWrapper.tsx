@@ -33,7 +33,9 @@ export default function ClientWrapper({ children, transaction }: WrapperProps) {
             <p className="text-stone-400 text-sm">Order #{transaction.id}</p>
             <p className="text-white font-bold">{transaction.amount} USD</p>
           </div>
-          <Timer totalTimeInSeconds={60} onTimeUp={handleTimeUp} />
+          {transaction.status === "CREATED" ? (
+            <Timer totalTimeInSeconds={60} onTimeUp={handleTimeUp} />
+          ) : null}
         </div>
       </footer>
     </>
