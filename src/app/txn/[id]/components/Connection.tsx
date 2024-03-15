@@ -57,7 +57,6 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
   const { address, isConnecting, isConnected } = useAccount();
 
   useEffect(() => {
-    console.log(transaction.txnHash, receipt?.transactionHash);
     if (transaction.txnHash) {
       setHash(transaction.txnHash);
     } else if (receipt?.transactionHash) {
