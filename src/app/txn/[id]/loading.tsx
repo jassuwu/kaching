@@ -49,7 +49,7 @@ export default function Loading() {
             <Skeleton className="h-10 w-1/2" />
             <Skeleton className="h-10 w-1/2" />
           </div>
-          <div className="border border-white p-2 rounded-md">
+          <div className="p-2 rounded-md">
             <p className="text-primary">1:00</p>
           </div>
         </div>
