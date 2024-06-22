@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { publicClient } from "@/config";
-import { ContractAddresses } from "@/constants";
+import { ContractAddresses, SEPOLIA_EXPLORER } from "@/constants";
 import { cn, formatAmountToPrecision, maskAddress } from "@/lib/utils";
 import { Transaction } from "@prisma/client";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -18,7 +18,7 @@ import {
   parseEther,
   parseUnits,
 } from "viem";
-import { polygonAmoy } from "viem/chains";
+import { sepolia } from "viem/chains";
 import {
   useAccount,
   useBalance,
@@ -95,7 +95,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
     isLoading: gasEstimateLoading,
     isFetched: gasEstimateFetched,
   } = useEstimateGas({
-    chainId: polygonAmoy.id,
+    chainId: sepolia.id,
     account: address,
     to: address,
     data: encodeFunctionData({
@@ -290,7 +290,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
                       <TooltipTrigger>
                         <Link
                           target="_blank"
-                          href={`https://amoy.polygonscan.com/tx/${hash}`}
+                          href={`${SEPOLIA_EXPLORER}/tx/${hash}`}
                           className="underline flex justify-end items-center gap-2"
                         >
                           <p className="text-black font-bold">
@@ -318,7 +318,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
                     <>
                       <p className="text-black">Txn Hash</p>
                       <Link
-                        href={`https://amoy.polygonscan.com/tx/${hash}`}
+                        href={`${SEPOLIA_EXPLORER}/tx/${hash}`}
                         className="underline flex justify-end items-center gap-2"
                       >
                         <p className="text-black font-bold">
