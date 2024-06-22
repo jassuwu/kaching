@@ -18,7 +18,7 @@ import {
   parseEther,
   parseUnits,
 } from "viem";
-import { polygonMumbai } from "viem/chains";
+import { polygonAmoy } from "viem/chains";
 import {
   useAccount,
   useBalance,
@@ -95,7 +95,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
     isLoading: gasEstimateLoading,
     isFetched: gasEstimateFetched,
   } = useEstimateGas({
-    chainId: polygonMumbai.id,
+    chainId: polygonAmoy.id,
     account: address,
     to: address,
     data: encodeFunctionData({
@@ -290,7 +290,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
                       <TooltipTrigger>
                         <Link
                           target="_blank"
-                          href={`https://mumbai.polygonscan.com/tx/${hash}`}
+                          href={`https://amoy.polygonscan.com/tx/${hash}`}
                           className="underline flex justify-end items-center gap-2"
                         >
                           <p className="text-black font-bold">
@@ -318,7 +318,7 @@ export default function Connection({ transaction, timeIsUp }: ConnectionProps) {
                     <>
                       <p className="text-black">Txn Hash</p>
                       <Link
-                        href={`https://mumbai.polygonscan.com/tx/${hash}`}
+                        href={`https://amoy.polygonscan.com/tx/${hash}`}
                         className="underline flex justify-end items-center gap-2"
                       >
                         <p className="text-black font-bold">
