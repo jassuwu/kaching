@@ -6,7 +6,7 @@ export default function Page() {
       <p className="text-primary text-9xl font-georama font-black">
         End of demo.
       </p>
-      <Link className="font-bold text-primary underline" href={"/"}>
+      <Link className="font-bold text-primary underline" href={"/demo"}>
         Click here to go back home
       </Link>
     </main>

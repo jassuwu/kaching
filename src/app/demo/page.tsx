@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PayWithCryptoDemoCreator } from "./components";
 import { BrushIcon, Code2Icon } from "lucide-react";
 
 export default function Home() {
@@ -7,6 +8,13 @@ export default function Home() {
       <p className="text-primary text-9xl font-georama font-black">
         <span className="text-white">ka</span>ching
       </p>
+      <section className="flex flex-col justify-center items-center">
+        <p className="text-white text-lg">
+          Create a <span className="text-primary font-black">fake</span>{" "}
+          transaction to demo the product.
+        </p>
+        <PayWithCryptoDemoCreator />
+      </section>
       <footer className="w-full flex justify-center items-center gap-6">
         <div className="flex justify-center items-center gap-2">
           <div className="text-white flex justify-center items-center gap-2">
